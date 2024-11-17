@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
     if (
       body?.type !== "TRANSFER" ||
-      transfer.operationType === "PIX" ||
+      transfer.operationType !== "PIX" ||
       !transfer.id
     ) {
       return NextResponse.json(
