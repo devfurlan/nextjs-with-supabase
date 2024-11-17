@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  zip_code     String
+  street_name  String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  country      String
+  type         String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  PeopleCare PeopleCare[]
+  Customers  Customers[]
+  Partners   Partners[]
+}
+
+model PeopleCare {
+  id              String   @id @default(uuid())
+  full_name       String
+  birth_date      DateTime
+  address_id      String
+  care_days       String
+  care_start_hour String
+  care_end_hour   String
+  care_start_day  DateTime
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  Address Address @relation(fields: [address_id], references: [id])
+}
+
+model Customers {
+  id                String   @id @default(uuid())
+  person_id         String
+  full_name         String
+  birth_date        DateTime
+  document_cpf      String
+  phone_number      String
+  email_address     String
+  relationship_type String
+  status            String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  Address Address? @relation(fields: [person_id], references: [id])
+  Orders  Orders[]
+}
+
+model Partners {
+  id           String   @id @default(uuid())
+  full_name    String
+  birth_date   DateTime
+  document_cpf String
+  phone_number String
+  address_id   String
+  gender       String
+  photo_url    String
+  status       String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  Address Address  @relation(fields: [address_id], references: [id])
+  Orders  Orders[]
+}
+
+enum PaymentStatus {
+  pending
+  partial
+  paid
+}
+
+enum OrderStatus {
+  pending
+  completed
+  canceled
+}
+
+model Orders {
+  id                      String        @id @default(uuid())
+  customer_id             String
+  partner_id              String
+  service_date            DateTime
+  total_value             Decimal
+  partner_payment_value   Decimal
+  received_value          Decimal       @default(0.0)
+  paid_to_partner         Decimal       @default(0.0)
+  payment_status_customer PaymentStatus @default(pending)
+  payment_status_partner  PaymentStatus @default(pending)
+  status                  OrderStatus   @default(pending)
+  created_at              DateTime      @default(now())
+  updated_at              DateTime      @updatedAt
+
+  Customer Customers @relation(fields: [customer_id], references: [id])
+  Partner  Partners  @relation(fields: [partner_id], references: [id])
+}
