@@ -136,21 +136,21 @@ model Orders {
 }
 
 model Payments {
-  id                   String        @id @default(uuid())
-  partner_id           String
-  customer_id          String
+  id                   String         @id @default(uuid())
+  partner_id           String?
+  customer_id          String?
   amount               Decimal
-  date                 DateTime
-  pix_key              String
-  pix_type             PixType
-  gateway_payment_id   String        @unique
-  gateway_payment_date DateTime
-  status               PaymentStatus @default(pending)
-  created_at           DateTime      @default(now())
-  updated_at           DateTime      @updatedAt
+  date                 DateTime?
+  pix_key              String?
+  pix_type             PixType?
+  gateway_payment_id   String?        @unique
+  gateway_payment_date DateTime?
+  status               PaymentStatus? @default(pending)
+  created_at           DateTime       @default(now())
+  updated_at           DateTime       @updatedAt
 
-  Partner  Partners  @relation(fields: [partner_id], references: [id])
-  Customer Customers @relation(fields: [customer_id], references: [id])
+  Partner  Partners?  @relation(fields: [partner_id], references: [id])
+  Customer Customers? @relation(fields: [customer_id], references: [id])
   Orders   Orders?
 
   @@map("payments")

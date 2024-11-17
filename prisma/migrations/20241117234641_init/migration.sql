@@ -96,15 +96,15 @@ CREATE TABLE "orders" (
 -- CreateTable
 CREATE TABLE "payments" (
     "id" TEXT NOT NULL,
-    "partner_id" TEXT NOT NULL,
-    "customer_id" TEXT NOT NULL,
+    "partner_id" TEXT,
+    "customer_id" TEXT,
     "amount" DECIMAL(65,30) NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "pix_key" TEXT NOT NULL,
-    "pix_type" "PixType" NOT NULL,
-    "gateway_payment_id" TEXT NOT NULL,
-    "gateway_payment_date" TIMESTAMP(3) NOT NULL,
-    "status" "PaymentStatus" NOT NULL DEFAULT 'pending',
+    "date" TIMESTAMP(3),
+    "pix_key" TEXT,
+    "pix_type" "PixType",
+    "gateway_payment_id" TEXT,
+    "gateway_payment_date" TIMESTAMP(3),
+    "status" "PaymentStatus" DEFAULT 'pending',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -136,7 +136,7 @@ ALTER TABLE "orders" ADD CONSTRAINT "orders_partner_id_fkey" FOREIGN KEY ("partn
 ALTER TABLE "orders" ADD CONSTRAINT "orders_payment_id_fkey" FOREIGN KEY ("payment_id") REFERENCES "payments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payments" ADD CONSTRAINT "payments_partner_id_fkey" FOREIGN KEY ("partner_id") REFERENCES "partners"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "payments" ADD CONSTRAINT "payments_partner_id_fkey" FOREIGN KEY ("partner_id") REFERENCES "partners"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "payments" ADD CONSTRAINT "payments_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "payments" ADD CONSTRAINT "payments_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
