@@ -114,6 +114,9 @@ CREATE TABLE "payments" (
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_payment_id_key" ON "orders"("payment_id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "payments_gateway_payment_id_key" ON "payments"("gateway_payment_id");
+
 -- AddForeignKey
 ALTER TABLE "people_care" ADD CONSTRAINT "people_care_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
