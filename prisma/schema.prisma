@@ -14,6 +14,28 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum OrderStatus {
+  pending
+  processing
+  completed
+  cancelled
+}
+
+enum PixType {
+  CNPJ
+  CPF
+  EMAIL
+  PHONE
+  EVP
+}
+
+enum PaymentStatus {
+  to_execute
+  pending
+  done
+  cancelled
+}
+
 model Address {
   id           String   @id @default(uuid())
   zip_code     String
@@ -31,6 +53,8 @@ model Address {
   PeopleCare PeopleCare[]
   Customers  Customers[]
   Partners   Partners[]
+
+  @@map("address")
 }
 
 model PeopleCare {
@@ -46,6 +70,8 @@ model PeopleCare {
   updated_at      DateTime @updatedAt
 
   Address Address @relation(fields: [address_id], references: [id])
+
+  @@map("people_care")
 }
 
 model Customers {
@@ -61,8 +87,11 @@ model Customers {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
-  Address Address? @relation(fields: [person_id], references: [id])
-  Orders  Orders[]
+  Address  Address?   @relation(fields: [person_id], references: [id])
+  Orders   Orders[]
+  Payments Payments[]
+
+  @@map("customers")
 }
 
 model Partners {
@@ -78,37 +107,51 @@ model Partners {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  Address Address  @relation(fields: [address_id], references: [id])
-  Orders  Orders[]
-}
+  Address  Address    @relation(fields: [address_id], references: [id])
+  Orders   Orders[]
+  Payments Payments[]
 
-enum PaymentStatus {
-  pending
-  partial
-  paid
-}
-
-enum OrderStatus {
-  pending
-  completed
-  canceled
+  @@map("partners")
 }
 
 model Orders {
   id                      String        @id @default(uuid())
   customer_id             String
   partner_id              String
+  payment_id              String?       @unique
   service_date            DateTime
   total_value             Decimal
   partner_payment_value   Decimal
   received_value          Decimal       @default(0.0)
   paid_to_partner         Decimal       @default(0.0)
   payment_status_customer PaymentStatus @default(pending)
-  payment_status_partner  PaymentStatus @default(pending)
   status                  OrderStatus   @default(pending)
   created_at              DateTime      @default(now())
   updated_at              DateTime      @updatedAt
 
   Customer Customers @relation(fields: [customer_id], references: [id])
   Partner  Partners  @relation(fields: [partner_id], references: [id])
+  Payment  Payments? @relation(fields: [payment_id], references: [id])
+
+  @@map("orders")
+}
+
+model Payments {
+  id             String        @id @default(uuid())
+  partner_id     String
+  customer_id    String
+  amount         Decimal
+  pix_key        String
+  pix_type       PixType
+  payment_id     String
+  payment_status PaymentStatus @default(pending)
+  payment_date   DateTime
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  Partner  Partners  @relation(fields: [partner_id], references: [id])
+  Customer Customers @relation(fields: [customer_id], references: [id])
+  Orders   Orders?
+
+  @@map("payments")
 }
