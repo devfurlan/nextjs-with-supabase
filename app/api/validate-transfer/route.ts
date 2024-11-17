@@ -3,13 +3,15 @@ import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    // Parse o JSON recebido no corpo da requisição
     const body = await request.json();
 
-    // Extraia o ID da transferência
-    const transferId = body?.transfer?.id;
+    const transfer = body?.transfer;
 
-    if (!transferId) {
+    if (
+      body?.type !== "TRANSFER" ||
+      transfer.operationType === "PIX" ||
+      !transfer.id
+    ) {
       return NextResponse.json(
         {
           status: "REFUSED",
@@ -19,13 +21,25 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verifique se há registros na tabela Orders com o ID fornecido
-    const order = await prisma.orders.findUnique({
-      where: { id: transferId },
+    const payment = await prisma.payments.findFirst({
+      where: {
+        gateway_payment_id: transfer.id,
+        amount: {
+          equals: Number(transfer.value),
+        },
+        pix_key: {
+          equals: transfer.bankAccount.pixAddressKey,
+        },
+      },
+      include: {
+        Partner: true,
+      },
     });
 
-    if (order) {
-      // Se o registro for encontrado
+    const paymentIsValid =
+      payment && payment.Partner?.full_name === transfer.bankAccount.ownerName;
+
+    if (paymentIsValid) {
       return NextResponse.json(
         {
           status: "APPROVED",
@@ -33,7 +47,6 @@ export async function POST(request: Request) {
         { status: 200 }
       );
     } else {
-      // Caso contrário
       return NextResponse.json(
         {
           status: "REFUSED",
@@ -44,8 +57,6 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error("Erro na validação da transferência:", error);
-
-    // Resposta de erro genérica
     return NextResponse.json(
       {
         status: "REFUSED",
