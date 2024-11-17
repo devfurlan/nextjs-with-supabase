@@ -27,17 +27,27 @@ export async function POST(request: Request) {
         amount: {
           equals: Number(transfer.value),
         },
-        pix_key: {
-          equals: transfer.bankAccount.pixAddressKey,
-        },
-      },
-      include: {
-        Partner: true,
+        pix_key: transfer.bankAccount.pixAddressKey,
       },
     });
+    const paymentIsValid = payment;
 
-    const paymentIsValid =
-      payment && payment.Partner?.full_name === transfer.bankAccount.ownerName;
+    // With partner
+    //*
+    // const payment = await prisma.payments.findFirst({
+    //   where: {
+    //     gateway_payment_id: transfer.id,
+    //     amount: {
+    //       equals: Number(transfer.value),
+    //     },
+    //     pix_key: transfer.bankAccount.pixAddressKey,
+    //   },
+    //   include: {
+    //     Partner: true,
+    //   },
+    // });
+    // const paymentIsValid =
+    //   payment && payment.Partner?.full_name === transfer.bankAccount.ownerName;
 
     if (paymentIsValid) {
       return NextResponse.json(
