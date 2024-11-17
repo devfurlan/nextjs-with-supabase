@@ -115,19 +115,18 @@ model Partners {
 }
 
 model Orders {
-  id                      String        @id @default(uuid())
-  customer_id             String
-  partner_id              String
-  payment_id              String?       @unique
-  service_date            DateTime
-  total_value             Decimal
-  partner_payment_value   Decimal
-  received_value          Decimal       @default(0.0)
-  paid_to_partner         Decimal       @default(0.0)
-  payment_status_customer PaymentStatus @default(pending)
-  status                  OrderStatus   @default(pending)
-  created_at              DateTime      @default(now())
-  updated_at              DateTime      @updatedAt
+  id                    String      @id @default(uuid())
+  customer_id           String
+  partner_id            String
+  payment_id            String?     @unique
+  service_date_start    DateTime
+  service_date_end      DateTime
+  total_value           Decimal
+  partner_payment_value Decimal
+  received_value        Decimal     @default(0.0)
+  status                OrderStatus @default(pending)
+  created_at            DateTime    @default(now())
+  updated_at            DateTime    @updatedAt
 
   Customer Customers @relation(fields: [customer_id], references: [id])
   Partner  Partners  @relation(fields: [partner_id], references: [id])
@@ -137,17 +136,18 @@ model Orders {
 }
 
 model Payments {
-  id             String        @id @default(uuid())
-  partner_id     String
-  customer_id    String
-  amount         Decimal
-  pix_key        String
-  pix_type       PixType
-  payment_id     String
-  payment_status PaymentStatus @default(pending)
-  payment_date   DateTime
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
+  id                   String        @id @default(uuid())
+  partner_id           String
+  customer_id          String
+  amount               Decimal
+  date                 DateTime
+  pix_key              String
+  pix_type             PixType
+  gateway_payment_id   String
+  gateway_payment_date DateTime
+  status               PaymentStatus @default(pending)
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
 
   Partner  Partners  @relation(fields: [partner_id], references: [id])
   Customer Customers @relation(fields: [customer_id], references: [id])
