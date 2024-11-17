@@ -1,69 +1,11 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('pending', 'processing', 'completed', 'cancelled');
 
-  - The values [canceled] on the enum `OrderStatus` will be removed. If these variants are still used in the database, this will fail.
-  - The values [partial,paid] on the enum `PaymentStatus` will be removed. If these variants are still used in the database, this will fail.
-  - You are about to drop the `Address` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Customers` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Orders` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Partners` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `PeopleCare` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "PixType" AS ENUM ('CNPJ', 'CPF', 'EMAIL', 'PHONE', 'EVP');
 
--- AlterEnum
-BEGIN;
-CREATE TYPE "OrderStatus_new" AS ENUM ('pending', 'processing', 'completed', 'cancelled');
-ALTER TABLE "Orders" ALTER COLUMN "status" DROP DEFAULT;
-ALTER TABLE "orders" ALTER COLUMN "status" TYPE "OrderStatus_new" USING ("status"::text::"OrderStatus_new");
-ALTER TYPE "OrderStatus" RENAME TO "OrderStatus_old";
-ALTER TYPE "OrderStatus_new" RENAME TO "OrderStatus";
-DROP TYPE "OrderStatus_old";
-COMMIT;
-
--- AlterEnum
-BEGIN;
-CREATE TYPE "PaymentStatus_new" AS ENUM ('to_execute', 'pending', 'done', 'cancelled');
-ALTER TABLE "Orders" ALTER COLUMN "payment_status_customer" DROP DEFAULT;
-ALTER TABLE "Orders" ALTER COLUMN "payment_status_partner" DROP DEFAULT;
-ALTER TABLE "orders" ALTER COLUMN "payment_status_customer" TYPE "PaymentStatus_new" USING ("payment_status_customer"::text::"PaymentStatus_new");
-ALTER TABLE "payments" ALTER COLUMN "payment_status" TYPE "PaymentStatus_new" USING ("payment_status"::text::"PaymentStatus_new");
-ALTER TYPE "PaymentStatus" RENAME TO "PaymentStatus_old";
-ALTER TYPE "PaymentStatus_new" RENAME TO "PaymentStatus";
-DROP TYPE "PaymentStatus_old";
-COMMIT;
-
--- DropForeignKey
-ALTER TABLE "Customers" DROP CONSTRAINT "Customers_person_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Orders" DROP CONSTRAINT "Orders_customer_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Orders" DROP CONSTRAINT "Orders_partner_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Partners" DROP CONSTRAINT "Partners_address_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "PeopleCare" DROP CONSTRAINT "PeopleCare_address_id_fkey";
-
--- DropTable
-DROP TABLE "Address";
-
--- DropTable
-DROP TABLE "Customers";
-
--- DropTable
-DROP TABLE "Orders";
-
--- DropTable
-DROP TABLE "Partners";
-
--- DropTable
-DROP TABLE "PeopleCare";
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('to_execute', 'pending', 'done', 'cancelled');
 
 -- CreateTable
 CREATE TABLE "address" (
