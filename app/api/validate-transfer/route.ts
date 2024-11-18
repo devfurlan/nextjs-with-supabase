@@ -6,7 +6,13 @@ export async function POST(request: Request) {
   try {
     const validationResponse = validateAccessToken(request);
     if (validationResponse) {
-      return validationResponse;
+      return NextResponse.json(
+        {
+          status: "REFUSED",
+          refuseReason: "Unauthorized",
+        },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
@@ -21,7 +27,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           status: "REFUSED",
-          refuseReason: "ID da transferência não foi fornecido",
+          refuseReason: "Transfer ID was not provided",
         },
         { status: 400 }
       );
@@ -66,17 +72,17 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           status: "REFUSED",
-          refuseReason: "Transferência não encontrada no nosso banco",
+          refuseReason: "Transfer not found in our database",
         },
         { status: 404 }
       );
     }
   } catch (error) {
-    console.error("Erro na validação da transferência:", error);
+    console.error("Error in transfer validation:", error);
     return NextResponse.json(
       {
         status: "REFUSED",
-        refuseReason: "Erro interno no servidor",
+        refuseReason: "Internal server error",
       },
       { status: 500 }
     );
