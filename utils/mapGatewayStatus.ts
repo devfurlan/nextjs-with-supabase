@@ -2,10 +2,12 @@ type PaymentStatus = "to_execute" | "pending" | "done" | "cancelled";
 
 const gatewayStatusMaps: Record<string, Record<string, PaymentStatus>> = {
   asaas: {
+    DONE: "done",
     RECEIVED: "done",
     CONFIRMED: "done",
     PENDING: "pending",
     OVERDUE: "pending",
+    CANCELLED: "cancelled",
     REFUNDED: "cancelled",
     CHARGEBACK: "cancelled",
   },
