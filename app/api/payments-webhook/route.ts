@@ -16,9 +16,9 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { event, payment } = body;
+    const { event, transfer } = body;
 
-    if (!event || !payment || !payment.id) {
+    if (!event || !transfer || !transfer.id) {
       return NextResponse.json(
         { received: false, error: "Invalid payload" },
         { status: 400 }
@@ -26,11 +26,11 @@ export async function POST(request: Request) {
     }
 
     await prisma.payments.update({
-      where: { gateway_payment_id: payment.id },
+      where: { gateway_payment_id: transfer.id },
       data: {
-        status: mapGatewayStatusToLocalStatus(payment.status),
-        payment_date: payment.effectiveDate,
-        receipt_url: payment.transactionReceiptUrl,
+        status: mapGatewayStatusToLocalStatus(transfer.status),
+        payment_date: transfer.effectiveDate,
+        receipt_url: transfer.transactionReceiptUrl,
       },
     });
 
