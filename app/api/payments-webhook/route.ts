@@ -9,7 +9,10 @@ export async function POST(request: Request) {
   try {
     const validationResponse = validateAccessToken(request);
     if (validationResponse) {
-      return validationResponse;
+      return NextResponse.json(
+        { received: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();

@@ -1,14 +1,7 @@
-import { NextResponse } from "next/server";
-
-export function validateAccessToken(req: Request): NextResponse | null {
+export function validateAccessToken(req: Request): boolean {
   const accessToken = req.headers.get("asaas-access-token");
-
   if (accessToken !== process.env.ASAAS_ACCESS_TOKEN) {
-    return NextResponse.json(
-      { received: false, error: "Unauthorized" },
-      { status: 401 }
-    );
+    return true;
   }
-
-  return null;
+  return false;
 }
