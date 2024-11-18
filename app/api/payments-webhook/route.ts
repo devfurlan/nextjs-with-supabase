@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       where: { gateway_payment_id: transfer.id },
       data: {
         status: mapGatewayStatusToLocalStatus(transfer.status),
-        payment_date: transfer.effectiveDate,
+        payment_date: new Date(transfer.effectiveDate),
         receipt_url: transfer.transactionReceiptUrl,
       },
     });
