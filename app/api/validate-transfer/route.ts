@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { validateAccessToken } from "@/utils/validateAccessToken";
 
 export async function POST(request: Request) {
   try {
+    const validationResponse = validateAccessToken(request);
+    if (validationResponse) {
+      return validationResponse;
+    }
+
     const body = await request.json();
 
     const transfer = body?.transfer;
